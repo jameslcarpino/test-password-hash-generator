@@ -257,10 +257,15 @@ def generate_hash(password: str, algorithm: HashAlgorithm, **kwargs) -> str:
         salt = generate_salt(16)
         hash_bytes = pbkdf2(password, salt, iterations, digest)
         
-        salt_b64 = base64.b64encode(salt).decode('ascii')
-        hash_b64 = base64.b64encode(hash_bytes).decode('ascii')
+        salt_b64 = base64.b64encode(salt).decode('ascii').rstrip('=')
+        hash_b64 = base64.b64encode(hash_bytes).decode('ascii').rstrip('=')
         
-        return f"$pbkdf2$i={iterations},d={digest}${salt_b64}${hash_b64}"
+        # Escape dollar signs in salt and hash
+        salt_b64 = salt_b64.replace('$', '\\$')
+        hash_b64 = hash_b64.replace('$', '\\$')
+        
+        # WorkOS expects format: \$pbkdf2\$i=600000,d=sha256\$salt\$hash
+        return f"\\$pbkdf2\\$i={iterations},d={digest}\\${salt_b64}\\${hash_b64}"
     
     elif algorithm == HashAlgorithm.BCRYPT:
         cost = kwargs.get('cost', 12)
@@ -268,8 +273,12 @@ def generate_hash(password: str, algorithm: HashAlgorithm, **kwargs) -> str:
         salt = generate_salt(16)
         hash_bytes = bcrypt_hash(password, salt, cost)
         
-        salt_b64 = base64.b64encode(salt).decode('ascii')
-        hash_b64 = base64.b64encode(hash_bytes).decode('ascii')
+        salt_b64 = base64.b64encode(salt).decode('ascii').rstrip('=')
+        hash_b64 = base64.b64encode(hash_bytes).decode('ascii').rstrip('=')
+        
+        # Escape dollar signs in salt and hash
+        salt_b64 = salt_b64.replace('$', '\\$')
+        hash_b64 = hash_b64.replace('$', '\\$')
         
         return f"$bcrypt$c={cost}${salt_b64}${hash_b64}"
     
@@ -281,8 +290,12 @@ def generate_hash(password: str, algorithm: HashAlgorithm, **kwargs) -> str:
         salt = generate_salt(16)
         hash_bytes = scrypt_hash(password, salt, N, r, p)
         
-        salt_b64 = base64.b64encode(salt).decode('ascii')
-        hash_b64 = base64.b64encode(hash_bytes).decode('ascii')
+        salt_b64 = base64.b64encode(salt).decode('ascii').rstrip('=')
+        hash_b64 = base64.b64encode(hash_bytes).decode('ascii').rstrip('=')
+        
+        # Escape dollar signs in salt and hash
+        salt_b64 = salt_b64.replace('$', '\\$')
+        hash_b64 = hash_b64.replace('$', '\\$')
         
         return f"$scrypt$N={N},r={r},p={p}${salt_b64}${hash_b64}"
     
@@ -294,8 +307,12 @@ def generate_hash(password: str, algorithm: HashAlgorithm, **kwargs) -> str:
         salt = generate_salt(16)
         hash_bytes = argon2_hash(password, salt, memory_cost, time_cost, parallelism)
         
-        salt_b64 = base64.b64encode(salt).decode('ascii')
-        hash_b64 = base64.b64encode(hash_bytes).decode('ascii')
+        salt_b64 = base64.b64encode(salt).decode('ascii').rstrip('=')
+        hash_b64 = base64.b64encode(hash_bytes).decode('ascii').rstrip('=')
+        
+        # Escape dollar signs in salt and hash
+        salt_b64 = salt_b64.replace('$', '\\$')
+        hash_b64 = hash_b64.replace('$', '\\$')
         
         return f"$argon2id$m={memory_cost},t={time_cost},p={parallelism}${salt_b64}${hash_b64}"
     

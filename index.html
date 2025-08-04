@@ -317,7 +317,7 @@
             try {
                 let hash = '';
                 const salt = generateSalt();
-                const saltB64 = btoa(String.fromCharCode(...new Uint8Array(salt)));
+                const saltB64 = btoa(String.fromCharCode(...new Uint8Array(salt))).replace(/=/g, '');
 
                 switch (algorithm) {
                     case 'pbkdf2':
@@ -334,8 +334,13 @@
                         break;
                 }
 
-                const hashB64 = btoa(String.fromCharCode(...new Uint8Array(hash)));
-                const phcString = formatPHCString(algorithm, saltB64, hashB64);
+                const hashB64 = btoa(String.fromCharCode(...new Uint8Array(hash))).replace(/=/g, '');
+                
+                // Escape dollar signs for all algorithms
+                let finalSaltB64 = saltB64.replace(/\$/g, '\\$');
+                let finalHashB64 = hashB64.replace(/\$/g, '\\$');
+                
+                const phcString = formatPHCString(algorithm, finalSaltB64, finalHashB64);
                 
                 hideLoading();
                 showResult(phcString);
@@ -449,7 +454,7 @@
                 case 'pbkdf2':
                     const digest = document.getElementById('pbkdf2-digest').value;
                     const iterations = document.getElementById('pbkdf2-iterations').value || 600000;
-                    return `$pbkdf2$i=${iterations},d=${digest}$${salt}$${hash}`;
+                    return `\\$pbkdf2\\$i=${iterations},d=${digest}\\$${salt}\\$${hash}`;
                 
                 case 'bcrypt':
                     const cost = document.getElementById('bcrypt-cost').value || 12;
