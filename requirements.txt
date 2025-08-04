@@ -1,0 +1,7 @@
+# Core dependencies (included in Python standard library)
+# No additional requirements for basic functionality
+
+# Optional dependencies for additional hash algorithms
+bcrypt>=4.0.0
+scrypt>=0.8.20
+argon2-cffi>=21.3.0 
