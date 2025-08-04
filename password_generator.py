@@ -213,7 +213,7 @@ def validate_bcrypt_parameters(cost: int) -> None:
 
 def validate_scrypt_parameters(N: int, r: int, p: int) -> None:
     """Validate scrypt parameters."""
-    if not (N & (N - 1) == 0) or N < 16384:
+    if (N & (N - 1)) != 0 or N < 16384:
         raise ValueError(f"scrypt N must be a power of 2 and at least 16384, got {N}")
     
     if not 1 <= r <= 8:

@@ -406,7 +406,8 @@
             const r = parseInt(document.getElementById('scrypt-r').value) || 8;
             const p = parseInt(document.getElementById('scrypt-p').value) || 1;
 
-            if (!(N & (N - 1) === 0) || N < 16384) {
+            // Check if N is a power of 2 and at least 16384
+            if ((N & (N - 1)) !== 0 || N < 16384) {
                 throw new Error('scrypt N must be a power of 2 and at least 16384');
             }
             if (r < 1 || r > 8) {
